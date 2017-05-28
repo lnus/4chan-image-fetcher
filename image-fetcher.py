@@ -63,15 +63,18 @@ class Fetcher(object):
             full_url = "http://i.4cdn.org/{}/{}".format(self.board, filename)
             try:
                 full_filename = os.path.join(folder, filename) 
+                if not os.path.exists(folder):
+                    os.mkdir(folder)
             except:
                 folder = prev
                 full_filename = os.path.join(folder, filename) 
-            if not os.path.exists(folder):
-                os.mkdir(folder)
+                if not os.path.exists(folder):
+                    os.mkdir(folder)
             if not os.path.exists(full_filename):
+                print("Downloading: {}".format(full_filename))
                 urlretrieve(full_url, full_filename)
         
 if __name__ == '__main__':
-    f = Fetcher()
+    f = Fetcher("wg")
     f.get_threads()
     f.thread_analyzer()
