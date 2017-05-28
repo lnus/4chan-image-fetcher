@@ -47,7 +47,8 @@ class Fetcher(object):
 
     def image_downloader(self, image, folder):
         """Downloads image if w >= 1920 and h >= 1080"""
-        if image["width"] >= 1920 and image["height"] >= 1080:
+        width, height = image["width"], image["height"]
+        if width >= 1920 and height >= 1080 and width >= height:
             print("Downloading: {}{} into {}".format(image["url"], image["ext"], folder))
             filename = "{}{}".format(image["url"], image["ext"])
             full_url = "http://i.4cdn.org/{}/{}".format(self.board, filename)
