@@ -31,6 +31,12 @@ class Fetcher(object):
             # Reads thread info from official 4chan API
             parsed = self.json_parser(thread_json.format(self.board, thread))
             title = "thread_{}".format(thread)
+            try:
+                subject = parsed["posts"][0]["sub"]
+                subject = subject.replace("/", "")
+                print(subject)
+            except KeyError:
+                subject = None
             for post in parsed["posts"]:
                 try:
                     image = {
@@ -42,17 +48,24 @@ class Fetcher(object):
                             }
                 except KeyError:
                     pass
-                self.image_downloader(image, title)
+                self.image_downloader(image, title, subject)
             sleep(1) 
 
-    def image_downloader(self, image, folder):
+    def image_downloader(self, image, folder, real_title=None):
         """Downloads image if w >= 1920 and h >= 1080"""
         width, height = image["width"], image["height"]
+        # Keeps backup if the subject name doesn't work with folder
+        if real_title:
+            prev = folder
+            folder = real_title
         if width >= 1920 and height >= 1080 and width >= height:
-            print("Downloading: {}{} into {}".format(image["url"], image["ext"], folder))
             filename = "{}{}".format(image["url"], image["ext"])
             full_url = "http://i.4cdn.org/{}/{}".format(self.board, filename)
-            full_filename = os.path.join(folder, filename) 
+            try:
+                full_filename = os.path.join(folder, filename) 
+            except:
+                folder = prev
+                full_filename = os.path.join(folder, filename) 
             if not os.path.exists(folder):
                 os.mkdir(folder)
             if not os.path.exists(full_filename):
